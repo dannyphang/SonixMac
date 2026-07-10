@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SonixMac}",
+            "name": "Debug SonixMac",
+            "target": "SonixMac",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SonixMac"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SonixMac}",
+            "name": "Release SonixMac",
+            "target": "SonixMac",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SonixMac"
+        }
+    ]
+}
