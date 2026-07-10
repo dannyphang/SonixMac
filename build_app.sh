@@ -39,7 +39,7 @@ cat > "$CONTENTS_DIR/Info.plist" << EOF
     <key>CFBundleName</key>
     <string>$APP_NAME</string>
     <key>CFBundleIconFile</key>
-    <string>AppIcon</string>
+    <string>AppIcon.icns</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -52,3 +52,6 @@ EOF
 
 echo "✅ Done! You can now find '$BUNDLE_DIR' in the SonixMac folder."
 echo "You can double-click it to run, or drag it to your Applications folder."
+
+# Touch the app bundle to force Finder to refresh the icon cache
+touch "$BUNDLE_DIR"
