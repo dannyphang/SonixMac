@@ -50,8 +50,29 @@ cat > "$CONTENTS_DIR/Info.plist" << EOF
 </plist>
 EOF
 
-echo "✅ Done! You can now find '$BUNDLE_DIR' in the SonixMac folder."
-echo "You can double-click it to run, or drag it to your Applications folder."
-
 # Touch the app bundle to force Finder to refresh the icon cache
 touch "$BUNDLE_DIR"
+
+echo "💿 Creating macOS DMG file..."
+DMG_NAME="${APP_NAME}.dmg"
+DMG_TMP_DIR="dmg_tmp"
+
+# Clean up previous dmg if exists
+rm -f "$DMG_NAME"
+rm -rf "$DMG_TMP_DIR"
+
+# Create a temporary directory for the DMG contents
+mkdir -p "$DMG_TMP_DIR"
+cp -R "$BUNDLE_DIR" "$DMG_TMP_DIR/"
+
+# Create a symlink to Applications folder
+ln -s /Applications "$DMG_TMP_DIR/Applications"
+
+# Generate the DMG
+hdiutil create -volname "$APP_NAME" -srcfolder "$DMG_TMP_DIR" -ov -format UDZO "$DMG_NAME"
+
+# Clean up temporary directory
+rm -rf "$DMG_TMP_DIR"
+
+echo "✅ Done! You can now find '$DMG_NAME' in the SonixMac folder."
+echo "You can double-click it to install."

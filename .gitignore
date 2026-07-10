@@ -1,3 +1,4 @@
 .build/
-Sonix.app/
+*.app
+*.dmg
 .DS_Store
