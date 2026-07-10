@@ -52,6 +52,11 @@ struct SettingsView: View {
                 }
             }
             .padding(.bottom, 10)
+            
+            Section(header: Text("About")) {
+                Text("App Version: \(AppConfig.version)")
+                    .foregroundColor(.secondary)
+            }
         }
         .padding(20)
         .frame(width: 500, height: 400)

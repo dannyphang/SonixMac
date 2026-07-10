@@ -1,0 +1,63 @@
+name: Auto Version Bump
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  bump-version:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Bump Version
+        run: |
+          python3 -c '
+          import re
+          
+          # Update Version.swift
+          with open("Sources/SonixMac/Version.swift", "r") as f:
+              content = f.read()
+          
+          match = re.search(r"version\s*=\s*\"(\d+\.\d+\.)(\d+)\"", content)
+          if match:
+              prefix = match.group(1)
+              patch = int(match.group(2))
+              new_version = f"{prefix}{patch + 1}"
+              content = content[:match.start()] + f"version = \"{new_version}\"" + content[match.end():]
+              with open("Sources/SonixMac/Version.swift", "w") as f:
+                  f.write(content)
+              print(f"Bumped Version.swift to {new_version}")
+          
+          # Update build_app.sh
+          with open("build_app.sh", "r") as f:
+              build_content = f.read()
+          
+          build_match = re.search(r"<key>CFBundleShortVersionString</key>\n\s*<string>(\d+\.\d+\.)(\d+)</string>", build_content)
+          if build_match:
+              build_content = build_content[:build_match.start()] + f"<key>CFBundleShortVersionString</key>\n    <string>{new_version}</string>" + build_content[build_match.end():]
+              with open("build_app.sh", "w") as f:
+                  f.write(build_content)
+              print(f"Bumped build_app.sh to {new_version}")
+          
+          # Save new version for next step
+          with open("new_version.txt", "w") as f:
+              f.write(new_version)
+          '
+
+      - name: Commit and push if changed
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add Sources/SonixMac/Version.swift build_app.sh
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            NEW_VER=$(cat new_version.txt)
+            git commit -m "chore: bump version to $NEW_VER [skip ci]"
+            git push
+          fi

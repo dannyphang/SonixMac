@@ -23,6 +23,9 @@ mkdir -p "$RESOURCES_DIR"
 echo "🚚 Moving binary into App Bundle..."
 cp .build/apple/Products/Release/$EXECUTABLE_NAME "$MACOS_DIR/$APP_NAME" 2>/dev/null || cp .build/release/$EXECUTABLE_NAME "$MACOS_DIR/$APP_NAME"
 
+echo "🎨 Copying AppIcon..."
+cp Resources/AppIcon.icns "$RESOURCES_DIR/" 2>/dev/null || true
+
 echo "📝 Creating Info.plist..."
 cat > "$CONTENTS_DIR/Info.plist" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -35,10 +38,12 @@ cat > "$CONTENTS_DIR/Info.plist" << EOF
     <string>com.sonix.mac</string>
     <key>CFBundleName</key>
     <string>$APP_NAME</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0</string>
+    <string>1.0.0</string>
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
 </dict>
