@@ -46,9 +46,14 @@ cat > "$CONTENTS_DIR/Info.plist" << EOF
     <string>1.0.0</string>
     <key>LSMinimumSystemVersion</key>
     <string>14.0</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Sonix needs microphone access to provide live voice monitoring.</string>
 </dict>
 </plist>
 EOF
+
+echo "🔒 Code signing the app bundle..."
+codesign --force --deep --sign - "$BUNDLE_DIR"
 
 # Touch the app bundle to force Finder to refresh the icon cache
 touch "$BUNDLE_DIR"

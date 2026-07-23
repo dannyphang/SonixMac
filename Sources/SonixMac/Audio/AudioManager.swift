@@ -130,6 +130,10 @@ class AudioManager: ObservableObject {
                 self.player = AVPlayer(playerItem: playerItem)
                 self.player?.volume = self.masterVolume
                 
+                if !AudioDeviceManager.shared.selectedOutputDeviceUID.isEmpty {
+                    self.player?.audioOutputDeviceUniqueID = AudioDeviceManager.shared.selectedOutputDeviceUID
+                }
+                
                 self.hasVideo = foundVideo
                 
                 self.duration = timeRange.duration.seconds
@@ -137,6 +141,14 @@ class AudioManager: ObservableObject {
                 self.updateVolumes()
                 
                 self.setupTimeObserver()
+                
+                NotificationCenter.default.addObserver(forName: .audioDeviceChanged, object: nil, queue: .main) { [weak self] _ in
+                    Task { @MainActor in
+                        if let uid = AudioDeviceManager.shared.selectedOutputDeviceUID as String?, !uid.isEmpty {
+                            self?.player?.audioOutputDeviceUniqueID = uid
+                        }
+                    }
+                }
                 
                 NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: playerItem, queue: .main) { [weak self] _ in
                     Task { @MainActor in
@@ -182,6 +194,7 @@ class AudioManager: ObservableObject {
             player?.removeTimeObserver(observer)
             timeObserver = nil
         }
+        NotificationCenter.default.removeObserver(self, name: .audioDeviceChanged, object: nil)
         NotificationCenter.default.removeObserver(self, name: .AVPlayerItemDidPlayToEndTime, object: player?.currentItem)
         player?.pause()
         player = nil
